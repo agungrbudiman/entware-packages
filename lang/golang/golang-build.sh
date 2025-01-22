@@ -109,6 +109,10 @@ build() {
 		modargs="$GO_MOD_ARGS"
 	fi
 
+	if [ -n "$GO_BUILD_EXT_GO_BIN" ] ; then
+		alias go="$GO_BUILD_EXT_GO_BIN"
+	fi
+
 	log "Finding targets"
 	# shellcheck disable=SC2086
 	targets="$(go list $modargs $GO_BUILD_PKG)"
