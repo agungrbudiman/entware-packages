@@ -5,12 +5,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=cloudflared
-PKG_VERSION:=2024.12.2
+PKG_VERSION:=2025.1.0
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/cloudflare/cloudflared/tar.gz/$(PKG_VERSION)?
-PKG_HASH:=48b9c54d79419d0489baadb8cb54d5196e0ff17650fb9eff81de02989fa8b009
+PKG_HASH:=f9223cdefaa4b75aa1c49638936af9d5007b6c7bd943ab70203bb75bf32467da
 
 PKG_LICENSE:=Apache-2.0
 PKG_LICENSE_FILES:=LICENSE
@@ -22,6 +22,8 @@ PKG_BUILD_FLAGS:=no-mips16
 
 GO_PKG:=github.com/cloudflare/cloudflared
 GO_PKG_LDFLAGS_X:=main.Version=$(PKG_VERSION)
+GO_PKG_INSTALL_BIN_PATH:=/opt/bin
+GO_CUSTOM_BIN_PATH:=/root/cloudflare-go/bin
 
 include $(INCLUDE_DIR)/package.mk
 include ../../lang/golang/golang-package.mk
@@ -46,19 +48,19 @@ define Package/cloudflared/description
 endef
 
 define Package/cloudflared/conffiles
-/etc/config/cloudflared
-/etc/cloudflared/
+/opt/etc/config/cloudflared
+/opt/etc/cloudflared/
 endef
 
 define Package/cloudflared/install
 	$(call GoPackage/Package/Install/Bin,$(1))
 
-	$(INSTALL_DIR) $(1)/etc/cloudflared/
-	$(INSTALL_CONF) $(CURDIR)/files/sample_config.yml $(1)/etc/cloudflared/config.yml
-	$(INSTALL_DIR) $(1)/etc/config/
-	$(INSTALL_CONF) $(CURDIR)/files/cloudflared.config $(1)/etc/config/cloudflared
-	$(INSTALL_DIR) $(1)/etc/init.d/
-	$(INSTALL_BIN) $(CURDIR)/files/cloudflared.init $(1)/etc/init.d/cloudflared
+	$(INSTALL_DIR) $(1)/opt/etc/cloudflared/
+	$(INSTALL_CONF) $(CURDIR)/files/sample_config.yml $(1)/opt/etc/cloudflared/config.yml
+	$(INSTALL_DIR) $(1)/opt/etc/config/
+	$(INSTALL_CONF) $(CURDIR)/files/cloudflared.config $(1)/opt/etc/config/cloudflared
+	$(INSTALL_DIR) $(1)/opt/etc/init.d/
+	$(INSTALL_BIN) $(CURDIR)/files/cloudflared.init $(1)/opt/etc/init.d/S99cloudflared
 endef
 
 $(eval $(call GoBinPackage,cloudflared))
