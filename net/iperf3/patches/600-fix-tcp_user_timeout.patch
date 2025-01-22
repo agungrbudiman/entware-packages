@@ -1,12 +1,26 @@
 --- a/configure.ac
 +++ b/configure.ac
-@@ -200,9 +200,9 @@ AC_COMPILE_IFELSE(
-                    [[int foo = TCP_USER_TIMEOUT;]])],
-   iperf3_cv_header_tcp_user_timeout=yes,
-   iperf3_cv_header_tcp_user_timeout=no))
+@@ -193,16 +193,16 @@ if test "x$iperf3_cv_header_tcp_congesti
+ fi
+ 
+ # Check for TCP_USER_TIMEOUT sockopt (believed to be Linux 2.6.37+ only)
+-AC_CACHE_CHECK([TCP_USER_TIMEOUT socket option],
+-[iperf3_cv_header_tcp_user_timeout],
+-AC_COMPILE_IFELSE(
+-  [AC_LANG_PROGRAM([[#include <netinet/tcp.h>]],
+-                   [[int foo = TCP_USER_TIMEOUT;]])],
+-  iperf3_cv_header_tcp_user_timeout=yes,
+-  iperf3_cv_header_tcp_user_timeout=no))
 -if test "x$iperf3_cv_header_tcp_user_timeout" = "xyes"; then
 -    AC_DEFINE([HAVE_TCP_USER_TIMEOUT], [1], [Have TCP_USER_TIMEOUT sockopt.])
 -fi
++#AC_CACHE_CHECK([TCP_USER_TIMEOUT socket option],
++#[iperf3_cv_header_tcp_user_timeout],
++#AC_COMPILE_IFELSE(
++#  [AC_LANG_PROGRAM([[#include <netinet/tcp.h>]],
++#                   [[int foo = TCP_USER_TIMEOUT;]])],
++#  iperf3_cv_header_tcp_user_timeout=yes,
++#  iperf3_cv_header_tcp_user_timeout=no))
 +#if test "x$iperf3_cv_header_tcp_user_timeout" = "xyes"; then
 +#    AC_DEFINE([HAVE_TCP_USER_TIMEOUT], [1], [Have TCP_USER_TIMEOUT sockopt.])
 +#fi
