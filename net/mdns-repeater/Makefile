@@ -6,13 +6,13 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=mdns-repeater
-PKG_RELEASE:=2
+PKG_RELEASE:=1
 
 PKG_SOURCE_URL:=https://github.com/kennylevinsen/mdns-repeater.git
 PKG_SOURCE_PROTO=git
-PKG_SOURCE_DATE:=2020-05-03
-PKG_SOURCE_VERSION:=921d8850e988d0bd8d60899d933c4ad3094d73ca
-PKG_MIRROR_HASH:=19997460a7eb9816b0c13328ce02331fac532dab549d602e35d671d5f481bfee
+PKG_SOURCE_DATE:=2023-12-16
+PKG_SOURCE_VERSION:=f714ec4d8a0eee248ead29c2ae1bb37f124a568f
+PKG_MIRROR_HASH:=d9c5e60d08afd56c5b32b88a48de8b50be2e816196e55c5b734a0d616a3430f2
 
 PKG_MAINTAINER:=Alexander Koenig <alex@lisas.de>
 PKG_LICENSE:=GPL-2.0-or-later
@@ -34,15 +34,19 @@ define Build/Compile
 	CFLAGS="$(TARGET_CFLAGS)" CPPFLAGS="$(TARGET_CPPFLAGS)" $(MAKE) -C $(PKG_BUILD_DIR) $(TARGET_CONFIGURE_OPTS)
 endef
 
+define Pakcage/mdns-repeater/conffiles
+/opt/etc/config/mdns-repeater
+endef
+
 define Package/mdns-repeater/install
-	$(INSTALL_DIR) $(1)/usr/sbin
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/mdns-repeater $(1)/usr/sbin/
+	$(INSTALL_DIR) $(1)/opt/sbin
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/mdns-repeater $(1)/opt/sbin/
 
-	$(INSTALL_DIR) $(1)/etc/init.d
-	$(INSTALL_BIN) ./files/mdns-repeater.init $(1)/etc/init.d/mdns-repeater
+	$(INSTALL_DIR) $(1)/opt/etc/init.d
+	$(INSTALL_BIN) ./files/mdns-repeater.init $(1)/opt/etc/init.d/S08mdns-repeater
 
-	$(INSTALL_DIR) $(1)/etc/config
-	$(INSTALL_CONF) ./files/mdns_repeater.conf $(1)/etc/config/mdns_repeater
+	$(INSTALL_DIR) $(1)/opt/etc/config
+	$(INSTALL_CONF) ./files/mdns_repeater.conf $(1)/opt/etc/config/mdns-repeater
 endef
 
 $(eval $(call BuildPackage,mdns-repeater))
