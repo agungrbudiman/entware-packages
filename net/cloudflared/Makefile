@@ -23,10 +23,47 @@ PKG_BUILD_FLAGS:=no-mips16
 GO_PKG:=github.com/cloudflare/cloudflared
 GO_PKG_LDFLAGS_X:=main.Version=$(PKG_VERSION)
 GO_PKG_INSTALL_BIN_PATH:=/opt/bin
-GO_CUSTOM_BIN_PATH:=/root/cloudflare-go/bin
 
 include $(INCLUDE_DIR)/package.mk
 include ../../lang/golang/golang-package.mk
+include ../../lang/golang/golang-compiler.mk
+
+# Go with Cloudflare experimental patches
+
+CF_GO_VERSION:=go1.22.5-devel-cf
+CF_GO_SOURCE_URL:=https://github.com/cloudflare/go.git
+CF_GO_SOURCE_VERSION:=f4334cdc0c3f22a3bfdd7e66f387e3ffc65a5c38
+CF_GO_HASH:=8cc8faa271991c8a53cfa7826489478d596c51738e8707b4f90e29597e8f7b88
+CF_GO_BOOTSTRAP:=$(STAGING_DIR_HOSTPKG)/lib/go-cross
+
+CF_GO_BUILD_DIR:=$(PKG_BUILD_DIR)/.go_cloudflare
+GO_PKG_EXT_GO_BIN:=$(CF_GO_BUILD_DIR)/bin/go
+
+define Download/cloudflare-go
+  FILE:=$(CF_GO_VERSION).tar.gz
+  URL:=$(CF_GO_SOURCE_URL)
+  SOURCE_VERSION:=$(CF_GO_SOURCE_VERSION)
+  MIRROR_HASH:=$(CF_GO_HASH)
+  SUBDIR:=$(CF_GO_VERSION)
+  PROTO:=git
+endef
+$(eval $(call Download,cloudflare-go))
+
+define Build/Prepare
+	$(Build/Prepare/Default)
+	mkdir -p "$(CF_GO_BUILD_DIR)"
+	$(HOST_TAR) -C "$(CF_GO_BUILD_DIR)" --strip-components=1 -xzf "$(DL_DIR)/$(CF_GO_VERSION).tar.gz"
+	
+	$(eval $(call GoCompiler/AddProfile,cloudflare-go,$(CF_GO_BUILD_DIR),,$(CF_GO_VERSION),$(GO_HOST_OS_ARCH)))
+	$(call GoCompiler/cloudflare-go/Make, \
+		GOROOT_BOOTSTRAP="$(CF_GO_BOOTSTRAP)" \
+		GOHOSTARCH="$(GO_HOST_ARCH)" \
+        	GOCACHE="$(GO_BUILD_CACHE_DIR)" \
+        	GOENV=off \
+        	CC="$(HOSTCC_NOCACHE)" \
+        	CXX="$(HOSTCXX_NOCACHE)" \
+	)
+endef
 
 define Package/cloudflared
   SECTION:=net
